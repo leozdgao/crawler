@@ -1,0 +1,42 @@
+{
+  "name": "node-crawler",
+  "version": "0.1.0",
+  "description": "Basic implementation of crawler in node.js",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "prepublish": "npm run build",
+    "test": "tape -r babel-register test/**/*.js | faucet"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leozdgao/crawler.git"
+  },
+  "keywords": [
+    "crawler"
+  ],
+  "author": "leozdgao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leozdgao/crawler/issues"
+  },
+  "homepage": "https://github.com/leozdgao/crawler#readme",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "mime": "^1.3.4"
+  },
+  "devDependencies": {
+    "babel": "^6.3.26",
+    "babel-cli": "^6.3.17",
+    "babel-eslint": "^5.0.0-beta6",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
+    "babel-register": "^6.3.13",
+    "eslint": "^1.10.3",
+    "faucet": "0.0.1",
+    "tape": "^4.3.0"
+  }
+}
