@@ -8,23 +8,18 @@
  *
  * @module requestMocker
  * @author leozdgao
- * @return {RequestHeader} 返回一个RequestHeader实例
+ * @return {Function} 创建RequestHeader的工厂函数
  */
 
 const _ = require('lodash')
 const defaults = require('./defaults')
 const normalizeNegotiator = require('./normalizeNegotiator')
 
-/**
- * 创建RequestHeader的工厂函数
- * @type {function}
- */
-module.exports = createRequestHeader
 
 /**
  * 生成一个默认的User-Agent头部
- * @param  {string} type 可选择是PC或者是Mobile
- * @return {string} 返回一个默认的User-Agent头部
+ * @param  {String} type 可选择是PC或者是Mobile
+ * @return {String} 返回一个默认的User-Agent头部
  */
 function getDefaultUa (type) {
   if (type === 'mobile') return DEFAULT_MOBILE_USER_AGENT
@@ -33,7 +28,8 @@ function getDefaultUa (type) {
 
 /**
  * 创建RequestHeader的工厂函数
- * @param  {object} options 给RequestHeader的配置
+ * @param  {Object} options 给RequestHeader的配置
+ * @type   {Function}
  * @return {RequestHeader} 返回一个RequestHeader实例
  */
 function createRequestHeader (options) {
@@ -82,22 +78,41 @@ function createRequestHeader (options) {
 
     // ----------------------内容协商-------------------------
 
+    /**
+     * 更新Accept头部
+     * @method
+     * @param  {String|Array} types 表示文件类型的字符串或数组
+     * @return {RequestHeader} 返回对象本身
+     */
     accept (types) {
       return this.negotiate({ types })
     }
 
+    /**
+     * 更新Accept-Language头部
+     * @method
+     * @param  {String|Array} langs 表示支持语言的字符串或数组
+     * @return {RequestHeader} 返回对象本身
+     */
     lang (langs) {
       return this.negotiate({ langs })
     }
 
+    /**
+     * 更新Accept-Encoding头部
+     * @method
+     * @param  {String|Array} encodings 表示支持编码的字符串或数组
+     * @return {RequestHeader} 返回对象本身
+     */
     encoding (encodings) {
       return this.negotiate({ encodings })
     }
 
     /**
-     * 更新内部的Negotiator对象，并更新相关的内容协商头部
-     * @param  {object} newNegotiator 用于更新的Negotiator对象，使用object.assign
-     * @return {}               [description]
+     * 更新内部的Negotiator对象，并更新相关的内容协商头部，使用object.assign
+     * @method
+     * @param  {object} newNegotiator 用于更新的Negotiator对象
+     * @return {RequestHeader} 返回对象本身
      */
     negotiate (newNegotiator) {
       this._negotiator = _.extend(this._negotiator, newNegotiator)
@@ -110,8 +125,9 @@ function createRequestHeader (options) {
     // ------------------------其他---------------------------
 
     /**
-     * 负责更新Referer头部
-     * @param  {string} 新的Referer头部
+     * 更新Referer头部
+     * @method
+     * @param  {String} 新的Referer头部
      * @return {RequestHeader} 返回对象本身
      */
     referer (origin) {
@@ -121,8 +137,9 @@ function createRequestHeader (options) {
     }
 
     /**
-     * 负责更新User-Agent头部
-     * @param  {string} newUa 新的User-Agent头部
+     * 更新User-Agent头部
+     * @method
+     * @param  {String} newUa 新的User-Agent头部
      * @return {RequestHeader} 返回对象本身
      */
     ua (newUa) {
@@ -134,8 +151,9 @@ function createRequestHeader (options) {
     // -----------------------------------------------------
 
     /**
-     * 批量更新现有头部
-     * @param  {object} newHeaders 新的请求头对象，使用object.assign
+     * 批量更新现有头部，使用object.assign
+     * @method
+     * @param  {Object} newHeaders 新的请求头对象
      * @return {RequestHeader} 返回对象本身
      */
     extend (obj) {
@@ -149,7 +167,8 @@ function createRequestHeader (options) {
 
     /**
      * 返回headers对象
-     * @return {object} 表示头部的Plain Object
+     * @method
+     * @return {Object} 表示头部的Plain Object
      */
     toPlainObject () {
       return this._headers
@@ -158,3 +177,5 @@ function createRequestHeader (options) {
 
   return new RequestHeader()
 }
+
+module.exports = createRequestHeader

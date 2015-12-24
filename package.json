@@ -8,8 +8,9 @@
   },
   "scripts": {
     "build": "babel src --out-dir lib",
+    "build:doc": "jsdoc lib -r -d docs",
     "prepublish": "npm run build",
-    "test": "tape -r babel-register test/**/*.js | faucet"
+    "test": "tape -r babel-register tests/**/*.js | faucet"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "babel-register": "^6.3.13",
     "eslint": "^1.10.3",
     "faucet": "0.0.1",
+    "jsdoc": "^3.4.0",
     "tape": "^4.3.0"
   }
 }

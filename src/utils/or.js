@@ -2,6 +2,7 @@ const _ = require('lodash')
 
 /**
  * 接受一些predicate函数，返回一个函数，和逻辑运算or是一样的
+ * @module utils/or
  * @param  {Function} ...funcs predicate函数
  * @return {Function} 一个整合了的predicate
  */
