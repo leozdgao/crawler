@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "babel src --out-dir lib",
-    "build:doc": "jsdoc lib -r -d docs",
+    "build:doc": "jsdoc src -r -d docs",
     "prepublish": "npm run build",
     "test": "tape -r babel-register tests/**/*.js | faucet"
   },

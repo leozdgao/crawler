@@ -66,11 +66,13 @@ function createRequestHeader (options) {
       }
       if (webp) this._negotiator.types.push('webp')
 
-      this._headers = {
-        "User-Agent": getDefaultUa(ua),
-        ...normalizeNegotiator(this._negotiator),
-        ...others
-      }
+      this._headers = _.assign(
+        {
+          "User-Agent": getDefaultUa(ua)
+        },
+        normalizeNegotiator(this._negotiator),
+        others
+      )
 
       // 用到的一些默认值常量
       this._defaults = defaults
