@@ -1,7 +1,7 @@
 const test = require('tape')
 const normalizeNegotiator = require('../../src/requestMocker/normalizeNegotiator')
 
-test('Try to normalize the negotiator headers in HTTP', assert => {
+test('[requestMocker/normalizeNegotiator] Try to normalize the negotiator headers in HTTP', assert => {
   const negoOptions = {
     types: [
       'html', 'xhtml',

@@ -4,7 +4,7 @@
   "description": "Basic implementation of crawler in node.js",
   "main": "lib/index.js",
   "directories": {
-    "test": "test"
+    "test": "tests"
   },
   "scripts": {
     "build": "babel src --out-dir lib",

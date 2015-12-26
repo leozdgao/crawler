@@ -67,6 +67,7 @@ function normalizeAcceptArray (arr, refactor = _.identity) {
 
 /**
  * 将一个AcceptObject对象数组序列化为可作为Accept头部的字符串
+ * @param {Array} arr 装满AcceptObject对象的数组
  * @return {String} 作为内容协商头部的值
  */
 function getAcceptString (arr) {

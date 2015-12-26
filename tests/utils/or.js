@@ -2,7 +2,7 @@ const test = require('tape')
 const _ = require('lodash')
 const or = require('../../src/utils/or')
 
-test("Take some predicates and action like logical operation: or", assert => {
+test("[utils/or] Take some predicates and action like logical operation: or", assert => {
   assert.plan(4)
 
   const funcs = [
