@@ -22,8 +22,8 @@ const normalizeNegotiator = require('./normalizeNegotiator')
  * @return {String} 返回一个默认的User-Agent头部
  */
 function getDefaultUa (type) {
-  if (type === 'mobile') return DEFAULT_MOBILE_USER_AGENT
-  else return DEFAULT_USER_AGENT
+  if (type === 'mobile') return defaults["DEFAULT_MOBILE_USER_AGENT"]
+  else return defaults["DEFAULT_USER_AGENT"]
 }
 
 /**
@@ -32,7 +32,7 @@ function getDefaultUa (type) {
  * @type   {Function}
  * @return {RequestHeader} 返回一个RequestHeader实例
  */
-function createRequestHeader (options) {
+function createRequestHeader (options = {}) {
   const {
     // 可选值为'pc'或者'mobile'，其他值统一认为是pc
     ua = 'pc',
@@ -87,6 +87,8 @@ function createRequestHeader (options) {
      * @return {RequestHeader} 返回对象本身
      */
     accept (types) {
+      if (!types) return this._negotiator.types
+
       return this.negotiate({ types })
     }
 
@@ -97,6 +99,8 @@ function createRequestHeader (options) {
      * @return {RequestHeader} 返回对象本身
      */
     lang (langs) {
+      if (!langs) return this._negotiator.langs
+
       return this.negotiate({ langs })
     }
 
@@ -107,6 +111,8 @@ function createRequestHeader (options) {
      * @return {RequestHeader} 返回对象本身
      */
     encoding (encodings) {
+      if (!encodings) return this._negotiator.encodings
+
       return this.negotiate({ encodings })
     }
 
