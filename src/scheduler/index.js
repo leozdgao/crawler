@@ -16,7 +16,7 @@ const createFactory = require('../utils/createFactory')
 function Scheduler (options = {}) {
   // 一些私用常量
   const { throttle = 500, maxWorkers = 10 } = options
-  const taskBuffer = []
+  let taskBuffer = []
   let isActive = false
 
   const executeTask = ({ task, meta }) => {
@@ -34,7 +34,7 @@ function Scheduler (options = {}) {
     this.workersCount -= 1
     if (err) this.emit('fail', { err, meta })
     else this.emit('done', { args, meta })
-    
+
     // 检查是否可以将缓存中的task拿出来继续执行
     if (this.workersCount < maxWorkers
       && taskBuffer.length > 0 && !isActive) activate()
@@ -85,6 +85,21 @@ function Scheduler (options = {}) {
 
     // 如果当前没有worker在工作，则激活工作队列
     if (this.workersCount <= 0) activate()
+  }
+
+  /**
+   * 关闭scheduler实例
+   * @method
+   */
+  this.off = _ => {
+    // 清空任务队列，并重置worker数量
+    taskBuffer = []
+    isActive = false
+    this.workersCount = 0
+
+    // 移除相关事件监听
+    this.removeAllListeners('done')
+    this.removeAllListeners('fail')
   }
 
   return this

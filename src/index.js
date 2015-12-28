@@ -8,6 +8,8 @@
 const _ = require('lodash')
 const request = require('request')
 const EventEmitter = require('events')
+const Observable = require('zen-observable')
+const applyPipeline = require('./pipeline/applyPipeline')
 const or = require('./utils/or')
 const thunkify = require('./utils/thunkify')
 const createFactory = require('./utils/createFactory')
@@ -22,27 +24,35 @@ function Crawler (options = {}) {
   const { scheduler, requestMocker } = options
   const cache = {}
 
-  scheduler.on('done', ({ meta: reqOpt, args }) => {
-    const [ res, body ] = args
+  const resStream = new Observable((observer) => {
+    scheduler.on('done', ({ meta: reqOpt, args }) => {
+      const [ res, body ] = args
+      observer.next(
+        [ res, reqOpt, { queue, header: requestMocker, resolveCache } ]
+      )
+    })
+  })
+  const resOKStream = resStream.filter(([ res, reqOpt ]) => {
     if (isResponseOK(res)) {
       const cacheKey = reqOpt.uri
       cache[cacheKey] = res
 
-      this.emit('data', reqOpt, res)
+      return true
     }
-    else {
-      if (isResponseNotFound(res)) {
-        this.emit('res:404', reqOpt, res)
-      }
-      this.emit('res:fail', reqOpt, res)
-    }
+    else return false
+    // return isResponseOK(res)
   })
+  const resFailStream = resStream.filter(([ res ]) => {
+    return !isResponseOK(res)
+  })
+
+  // 通常是由于网络问题、权限问题等与请求结果无关的异常捕获
   scheduler.on('fail', ({ meta: reqOpt, err }) => {
     this.emit('fail', reqOpt, err)
   })
 
   /**
-   * [crawl description]
+   * 开始让爬虫爬取相应目标
    * @param  {Array|String} targets 需要爬的url
    * @return {Pipeline} 一个提供数据消费的对象
    */
@@ -51,46 +61,50 @@ function Crawler (options = {}) {
       targets = [ targets ]
     }
 
-    targets.forEach(this.queue)
+    targets.forEach(queue)
 
     // pipeline
-    return {}
+    return {
+      subscribe (onData, onFailed) {
+        if (!Array.isArray(onData)) onData = [ onData ]
+        if (!Array.isArray(onFailed)) onFailed = [ onFailed ]
 
-    // 可以是一个String，也可以是一个request模块的配置对象
-    // targets.filter(or(_.isString, _.isPlainObject))
-    //   .forEach(reqOpt => {
-    //     const headers = requestMocker.toPlainObject()
-    //     if (_.isString(reqOpt)) {
-    //       reqOpt = {
-    //         uri: reqOpt,
-    //         headers
-    //       }
-    //     }
-    //     else {
-    //       req.headers = _.assign({}, req.headers, headers)
-    //     }
-    //
-    //     // 把reqOpt作为meta数据传递
-    //     scheduler.queue(thunkedRequest(reqOpt), reqOpt)
-    //   }
-    // )
+        resOKStream.subscribe({
+          next: subscriber(onData)
+        })
+        resFailStream.subscribe({
+          next: subscriber(onFailed)
+        })
+
+        function subscriber (middlewares) {
+          return args => {
+            const [ res ] = args
+            const pipeline = applyPipeline(middlewares, args)
+
+            pipeline(res.body)
+          }
+        }
+      }
+    }
   }
+
   /**
    * 查看缓存
    * @param  {String} key 缓存的key
    * @return {Any} 缓存的数据
    */
-  this.resolveCache = item => {
+  function resolveCache (item) {
     if (!_.isString(item)) {
       item = JSON.stringify(item)
     }
     return cache[item]
   }
+
   /**
    * 向任务队列中放入新的需要爬的url
    * @param  {String|Object} url 需要爬的url
    */
-  this.queue = reqOpt => {
+  function queue (reqOpt) {
     const headers = requestMocker.toPlainObject()
     const gzip = requestMocker.encoding().indexOf('gzip') >= 0
     if (_.isString(reqOpt)) {
@@ -119,5 +133,7 @@ function createCrawler (options) {
 }
 
 module.exports = {
-  createCrawler, createScheduler, createRequestHeader
+  createCrawler,
+  createScheduler,
+  createRequestHeader
 }
