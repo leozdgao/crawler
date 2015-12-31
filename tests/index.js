@@ -4,6 +4,7 @@ const _ = require('lodash')
 const cheerio = require('cheerio')
 const crawlerModule = require('../src')
 const resolveLink = require('../src/pipeline/resolveLink')
+const reportNotFound = require('../src/pipeline/reportNotFound')
 const {
   createCrawler, createScheduler, createRequestHeader
 } = crawlerModule
@@ -30,7 +31,8 @@ test('[Crawler] Try fetch all link in pages', assert => {
 
   const stream = crawler.crawl('http://localhost:8080/')
   stream.subscribe(
-    resolveLink(isInSameDomain)
+    resolveLink(isInSameDomain),
+    reportNotFound()
   )
 
   // crawler.crawl('http://www.gamefy.cn/')

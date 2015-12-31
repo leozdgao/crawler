@@ -40,7 +40,6 @@ function Crawler (options = {}) {
       return true
     }
     else return false
-    // return isResponseOK(res)
   })
   const resFailStream = resStream.filter(([ res ]) => {
     return !isResponseOK(res)
@@ -115,6 +114,7 @@ function Crawler (options = {}) {
     }
     else {
       reqOpt.headers = _.assign({}, reqOpt.headers, headers)
+      reqOpt.gzip = gzip
     }
 
     // 把reqOpt作为meta数据传递

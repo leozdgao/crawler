@@ -17,6 +17,8 @@ module.exports = function resolveLink (predicate) {
         queue(newRequest)
       }
     })
+
+    return body
   }
 }
 
